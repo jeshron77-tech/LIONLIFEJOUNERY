@@ -1,0 +1,130 @@
+.journey {
+  position: relative;
+  color: #F5F0E6;
+  background: #080806;
+  width: 100%;
+}
+
+.journey-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: #080806;
+  pointer-events: none;
+}
+
+.journey-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity;
+  filter: brightness(0.92) contrast(1.05);
+}
+
+.journey-video.is-active {
+  opacity: 1;
+}
+
+/* Fixed viewport overlay for active chapter typography */
+.journey-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+.journey-overlay.is-visible {
+  opacity: 1;
+}
+
+.journey-number {
+  color: #D4AF37;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  margin-bottom: 0.75rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95);
+}
+
+.journey-copy h2 {
+  margin: 0.4rem 0 0.8rem 0;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: clamp(1.8rem, 3.6vw, 3.2rem);
+  line-height: 1.15;
+  letter-spacing: 0.08em;
+  max-width: 48rem;
+  text-shadow: 0 4px 25px rgba(0, 0, 0, 0.95);
+}
+
+.journey-subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  color: #F5F0E6;
+  letter-spacing: 0.04em;
+  max-width: 42rem;
+  margin: 0 auto 0.6rem auto;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95);
+}
+
+.journey-story {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 34rem;
+  line-height: 1.55;
+  margin: 0 auto;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+}
+
+.king-audio-button {
+  pointer-events: auto;
+  margin-top: 1.75rem;
+  padding: 0.85rem 1.75rem;
+  border: 1px solid rgba(212, 175, 55, 0.7);
+  border-radius: 999px;
+  background: rgba(21, 19, 15, 0.85);
+  backdrop-filter: blur(12px);
+  color: #E7C76A;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+.king-audio-button:hover {
+  background: #D4AF37;
+  color: #080806;
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+  transform: scale(1.04);
+}
+
+.king-audio-button.is-playing {
+  background: #D4AF37;
+  color: #080806;
+  box-shadow: 0 0 35px rgba(212, 175, 55, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-video {
+    transition: none;
+  }
+}
