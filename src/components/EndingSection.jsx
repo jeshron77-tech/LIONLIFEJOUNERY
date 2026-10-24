@@ -10,7 +10,7 @@ const JOURNEY_STILLS = [
   { id: 'new', label: 'NEW KING', src: '/images/journey/06-new-king.jpg' },
 ];
 
-export function EndingSection({ onReturnToBeginning }) {
+export const EndingSection = React.memo(function EndingSection({ onReturnToBeginning }) {
   return (
     <section className="relative w-full min-h-screen flex flex-col items-center justify-center px-6 py-28 bg-[#080806] z-20 overflow-hidden text-center">
       {/* Background Editorial Montage: Lion's Life Journey Stills (Born -> Grow -> King -> Aging -> End -> New) */}
@@ -109,4 +109,4 @@ export function EndingSection({ onReturnToBeginning }) {
       </div>
     </section>
   );
-}
+});

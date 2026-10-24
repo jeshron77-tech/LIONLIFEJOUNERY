@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function TimelineIndicator({ chapters, activeChapterIndex, onSelectChapter, globalProgress }) {
+export const TimelineIndicator = React.memo(function TimelineIndicator({ chapters, activeChapterIndex, onSelectChapter, globalProgress }) {
   return (
     <aside
       className="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col items-end gap-5 select-none pointer-events-auto"
@@ -45,4 +45,4 @@ export function TimelineIndicator({ chapters, activeChapterIndex, onSelectChapte
       </div>
     </aside>
   );
-}
+});

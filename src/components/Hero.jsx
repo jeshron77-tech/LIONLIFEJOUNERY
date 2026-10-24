@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 
-export function Hero({ onBeginScroll }) {
+export const Hero = React.memo(function Hero({ onBeginScroll }) {
   const [isLoaded, setIsLoaded] = useState(false);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     // Gentle cinematic fade-in after mount
@@ -10,13 +11,37 @@ export function Hero({ onBeginScroll }) {
     return () => clearTimeout(timer);
   }, []);
 
+  // Performance Optimization: Pause video when scrolled out of view to free GPU/decoders for chapter scrubbing
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !('IntersectionObserver' in window)) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.05 }
+    );
+
+    const section = video.closest('section');
+    if (section) observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <section className="relative w-full h-screen flex flex-col items-center justify-between px-6 py-10 md:py-14 overflow-hidden z-20">
       {/* Background with Ambient Video Footage & Glass Layer */}
       <div className="absolute inset-0 -z-10 overflow-hidden bg-[#080806]">
-        {/* Crisp, vibrant ambient lion footage */}
+        {/* Crisp, vibrant ambient lion footage with instant poster */}
         <video
-          src="/videos/01-birth.v2.mp4"
+          ref={videoRef}
+          src="/videos/hero-ambient.mp4"
+          poster="/images/journey/01-born.jpg"
           autoPlay
           loop
           muted
@@ -94,4 +119,4 @@ export function Hero({ onBeginScroll }) {
       </div>
     </section>
   );
-}
+});

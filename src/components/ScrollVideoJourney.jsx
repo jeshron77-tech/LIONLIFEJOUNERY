@@ -9,7 +9,7 @@ import "./ScrollVideoJourney.css";
 
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 
-export default function ScrollVideoJourney({
+function ScrollVideoJourney({
   onActiveChapterChange,
   onProgressChange,
   containerRef: externalContainerRef,
@@ -61,6 +61,11 @@ export default function ScrollVideoJourney({
   const [isInsideJourney, setIsInsideJourney] = useState(false);
   const [isCubWalking, setIsCubWalking] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(false);
+
+  const audioEnabledRef = useRef(false);
+  audioEnabledRef.current = audioEnabled;
+  const isInsideJourneyRef = useRef(false);
+  const isCubWalkingRef = useRef(false);
   const [debugStats, setDebugStats] = useState({
     rAFHz: 60,
     mediaTime: 0,
@@ -199,7 +204,10 @@ export default function ScrollVideoJourney({
       // Continuous 0.0 to 1.0 journey progress
       const journeyProgress = clamp(-rect.top / totalScrollDistance, 0, 1);
       const inJourney = rect.top <= 0 && rect.bottom >= 0;
-      setIsInsideJourney(inJourney);
+      if (isInsideJourneyRef.current !== inJourney) {
+        isInsideJourneyRef.current = inJourney;
+        setIsInsideJourney(inJourney);
+      }
 
       // Map seamlessly across all 6 chapters without dead zones
       const chapterCount = CHAPTERS.length;
@@ -207,11 +215,11 @@ export default function ScrollVideoJourney({
       const activeIdx = Math.min(chapterCount - 1, Math.floor(chapterFloat));
       const localProgress = Math.min(1, chapterFloat - activeIdx);
 
-      // In Chapter 6, track when lion cub steps forward
-      if (activeIdx === 5) {
-        setIsCubWalking(localProgress > 0.45);
-      } else {
-        setIsCubWalking(false);
+      // In Chapter 6, track when lion cub steps forward (guarded against redundant state dispatches)
+      const shouldCubWalk = activeIdx === 5 && localProgress > 0.45;
+      if (isCubWalkingRef.current !== shouldCubWalk) {
+        isCubWalkingRef.current = shouldCubWalk;
+        setIsCubWalking(shouldCubWalk);
       }
 
       // Handle active chapter switch
@@ -251,7 +259,7 @@ export default function ScrollVideoJourney({
       }
 
       // Skip scrubbing if King Audio is actively playing normally
-      if (activeIdx === 3 && audioEnabled && !video.paused) {
+      if (activeIdx === 3 && audioEnabledRef.current && !video.paused) {
         return;
       }
 
@@ -269,9 +277,11 @@ export default function ScrollVideoJourney({
         Math.max(0, duration - 0.001)
       );
 
-      // Issue seek if target frame changed
-      if (lastTargetFrameRef.current[activeIdx] !== targetFrame) {
-        dispatchSeek(activeIdx, targetTime, targetFrame);
+      // Issue seek if target frame changed and user is inside or entering journey
+      if (inJourney || rect.top <= window.innerHeight) {
+        if (lastTargetFrameRef.current[activeIdx] !== targetFrame) {
+          dispatchSeek(activeIdx, targetTime, targetFrame);
+        }
       }
 
       // Debug telemetry update
@@ -287,7 +297,7 @@ export default function ScrollVideoJourney({
         });
       }
     });
-  }, [audioEnabled, containerRef, debugMode, dispatchSeek, onActiveChapterChange, onProgressChange, upgradePreload]);
+  }, [containerRef, debugMode, dispatchSeek, onActiveChapterChange, onProgressChange, upgradePreload]);
 
   // Video metadata and canplay listeners to calculate timeline immediately
   useEffect(() => {
@@ -366,6 +376,7 @@ export default function ScrollVideoJourney({
               activeChapter === i ? "is-active" : ""
             }`}
             src={chapter.src}
+            poster={chapter.poster}
             muted
             playsInline
             preload={getPreloadForIndex(i)}
@@ -474,10 +485,12 @@ export default function ScrollVideoJourney({
             <span>{debugStats.mediaTime.toFixed(3)}s</span>
 
             <span className="text-white/60">Encoding:</span>
-            <span className="text-blue-300">FastStart H.264 (GOP 4, CRF 18)</span>
+            <span className="text-blue-300">FastStart H.264 (GOP 4, CRF 20)</span>
           </div>
         </aside>
       )}
     </main>
   );
 }
+
+export default React.memo(ScrollVideoJourney);

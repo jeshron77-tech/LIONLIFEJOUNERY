@@ -10,6 +10,7 @@ export const CHAPTERS = [
     reflection: "Cubs remain hidden for their first weeks, protected entirely by maternal vigilance. Strength begins not in dominion, but in quiet sanctuary.",
     src: "/videos/01-birth.v2.mp4",
     video: "/videos/01-birth.v2.mp4",
+    poster: "/images/journey/01-born.jpg",
     fps: 24
   },
   {
@@ -22,6 +23,7 @@ export const CHAPTERS = [
     reflection: "Play is the pride's classroom. Through cooperative games, cubs study distance, balance, and the social bonds that sustain pride life.",
     src: "/videos/02-growth.v2.mp4",
     video: "/videos/02-growth.v2.mp4",
+    poster: "/images/journey/02-grow.jpg",
     fps: 24
   },
   {
@@ -34,6 +36,7 @@ export const CHAPTERS = [
     reflection: "In the open plains, patience outweighs speed. A hunter learns to harmonize with the dry grass and the rhythm of the herd.",
     src: "/videos/03-hunter.v2.mp4",
     video: "/videos/03-hunter.v2.mp4",
+    poster: "/images/journey/03-hunter.jpg",
     fps: 24
   },
   {
@@ -46,6 +49,7 @@ export const CHAPTERS = [
     reflection: "Leadership in the wild is stewardship. The roar is both a boundary for competitors and reassurance for the pride resting below.",
     src: "/videos/04-king.v2.mp4",
     video: "/videos/04-king.v2.mp4",
+    poster: "/images/journey/04-king.jpg",
     fps: 24
   },
   {
@@ -58,6 +62,7 @@ export const CHAPTERS = [
     reflection: "Time spares nothing, yet deepens everything. Aging brings a measured presence, where seasoned experience replaces the impulse of youth.",
     src: "/videos/05-aging.v2.mp4",
     video: "/videos/05-aging.v2.mp4",
+    poster: "/images/journey/05-aging.jpg",
     fps: 24
   },
   {
@@ -70,6 +75,7 @@ export const CHAPTERS = [
     reflection: "An ending in nature is never an absence. Life completes its circle, quietly passing the crown to the next generation.",
     src: "/videos/06-ending.v2.mp4",
     video: "/videos/06-ending.v2.mp4",
+    poster: "/images/journey/06-new-king.jpg",
     fps: 24
   }
 ];

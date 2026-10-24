@@ -1,7 +1,7 @@
 import React from 'react';
 import { Volume2, VolumeX, Compass } from 'lucide-react';
 
-export function Navbar({ activeChapterIndex, chapters, scrollProgress, isAudioPlaying, toggleAudio, onJumpToChapter }) {
+export const Navbar = React.memo(function Navbar({ activeChapterIndex, chapters, scrollProgress, isAudioPlaying, toggleAudio, onJumpToChapter }) {
   return (
     <header className="fixed top-0 left-0 w-full z-50 px-6 md:px-12 py-4 flex items-center justify-between pointer-events-none transition-all duration-500 backdrop-blur-xl bg-white/[0.03] border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.15)]">
       {/* Brand Title */}
@@ -72,4 +72,4 @@ export function Navbar({ activeChapterIndex, chapters, scrollProgress, isAudioPl
       </div>
     </header>
   );
-}
+});
