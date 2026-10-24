@@ -16,7 +16,7 @@ export function Hero({ onBeginScroll }) {
       <div className="absolute inset-0 -z-10 overflow-hidden bg-[#080806]">
         {/* Crisp, vibrant ambient lion footage */}
         <video
-          src="/videos/01-birth.mp4"
+          src="/videos/01-birth.v2.mp4"
           autoPlay
           loop
           muted

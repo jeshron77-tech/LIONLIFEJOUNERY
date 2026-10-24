@@ -3,3 +3,5 @@ dist
 .gemini
 *.log
 /*.mp4
+/video_backups/
+

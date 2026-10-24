@@ -25,6 +25,30 @@ export default function ScrollVideoJourney({
   const lastTargetTimeRef = useRef(CHAPTERS.map(() => -1));
   const lastReportedPercentRef = useRef(-1);
 
+  // Latest-request-wins seek queue state
+  const isSeekingRef = useRef(CHAPTERS.map(() => false));
+  const pendingSeekRef = useRef(CHAPTERS.map(() => null));
+
+  // Progressive preload set: Chapter 0 starts as "auto", others upgrade on demand
+  const [autoPreloadSet, setAutoPreloadSet] = useState(() => new Set([0]));
+
+  const upgradePreload = useCallback((chapterIndex) => {
+    if (chapterIndex < 0 || chapterIndex >= CHAPTERS.length) return;
+    setAutoPreloadSet((prev) => {
+      if (prev.has(chapterIndex)) return prev;
+      const next = new Set(prev);
+      next.add(chapterIndex);
+      return next;
+    });
+  }, []);
+
+  const handleChapterBuffered = useCallback((index) => {
+    // When a chapter has buffered, unlock preload="auto" for the next adjacent chapter
+    if (index + 1 < CHAPTERS.length) {
+      upgradePreload(index + 1);
+    }
+  }, [upgradePreload]);
+
   // Diagnostics & performance measurement
   const [debugMode, setDebugMode] = useState(() => {
     if (typeof window !== "undefined") {
@@ -83,17 +107,67 @@ export default function ScrollVideoJourney({
     }
   }, [audioEnabled, pauseKingAudio]);
 
-  // Direct, deadlock-free seek execution
-  const performSeek = useCallback((videoIndex, targetTime, targetFrame) => {
-    const video = videoRefs.current[videoIndex];
-    if (!video || !Number.isFinite(targetTime)) return;
+  // Hardened Latest-Request-Wins Seek Dispatcher
+  const dispatchSeek = useCallback((index, targetTime, targetFrame) => {
+    const video = videoRefs.current[index];
+    if (!video || !Number.isFinite(targetTime) || !Number.isFinite(video.duration) || video.duration <= 0) {
+      return;
+    }
 
-    lastTargetFrameRef.current[videoIndex] = targetFrame;
-    lastTargetTimeRef.current[videoIndex] = targetTime;
+    lastTargetFrameRef.current[index] = targetFrame;
+    lastTargetTimeRef.current[index] = targetTime;
 
-    // Direct assignment - All-I-Frame MP4 decodes target frame instantaneously
+    // Self-healing safety check: if the browser finished or is not seeking, clear lock
+    if (!video.seeking) {
+      isSeekingRef.current[index] = false;
+    }
+
+    // If seek in flight, stash latest target (latest-request-wins)
+    if (isSeekingRef.current[index]) {
+      pendingSeekRef.current[index] = { targetTime, targetFrame };
+      return;
+    }
+
+    // Avoid redundant seek if already at target position
+    if (Math.abs(video.currentTime - targetTime) < 0.001) {
+      return;
+    }
+
+    isSeekingRef.current[index] = true;
+    pendingSeekRef.current[index] = null;
     video.currentTime = targetTime;
   }, []);
+
+  const handleSeeked = useCallback((index) => {
+    isSeekingRef.current[index] = false;
+    const pending = pendingSeekRef.current[index];
+    if (pending !== null && pending !== undefined) {
+      pendingSeekRef.current[index] = null;
+      dispatchSeek(index, pending.targetTime, pending.targetFrame);
+    }
+  }, [dispatchSeek]);
+
+  const handleSeekReset = useCallback((index) => {
+    isSeekingRef.current[index] = false;
+    const pending = pendingSeekRef.current[index];
+    if (pending !== null && pending !== undefined) {
+      pendingSeekRef.current[index] = null;
+      const video = videoRefs.current[index];
+      if (video && !video.seeking) {
+        dispatchSeek(index, pending.targetTime, pending.targetFrame);
+      }
+    }
+  }, [dispatchSeek]);
+
+  const getPreloadForIndex = useCallback((i) => {
+    if (autoPreloadSet.has(i)) {
+      return "auto";
+    }
+    if (autoPreloadSet.has(i - 1)) {
+      return "metadata";
+    }
+    return "none";
+  }, [autoPreloadSet]);
 
   // Main Coordinated Animation & Continuous Scroll Timeline Loop
   const updateTimeline = useCallback(() => {
@@ -147,6 +221,12 @@ export default function ScrollVideoJourney({
         setActiveChapter(activeIdx);
         onActiveChapterChange?.(activeIdx);
 
+        // Preload active and next adjacent chapter
+        upgradePreload(activeIdx);
+        if (activeIdx + 1 < CHAPTERS.length) {
+          upgradePreload(activeIdx + 1);
+        }
+
         // Sound isolation: silence Chapter 4 King audio when leaving
         if (prevIndex === 3 || activeIdx !== 3) {
           const king = videoRefs.current[3];
@@ -191,7 +271,7 @@ export default function ScrollVideoJourney({
 
       // Issue seek if target frame changed
       if (lastTargetFrameRef.current[activeIdx] !== targetFrame) {
-        performSeek(activeIdx, targetTime, targetFrame);
+        dispatchSeek(activeIdx, targetTime, targetFrame);
       }
 
       // Debug telemetry update
@@ -207,7 +287,7 @@ export default function ScrollVideoJourney({
         });
       }
     });
-  }, [audioEnabled, containerRef, debugMode, onActiveChapterChange, onProgressChange, performSeek]);
+  }, [audioEnabled, containerRef, debugMode, dispatchSeek, onActiveChapterChange, onProgressChange, upgradePreload]);
 
   // Video metadata and canplay listeners to calculate timeline immediately
   useEffect(() => {
@@ -288,7 +368,14 @@ export default function ScrollVideoJourney({
             src={chapter.src}
             muted
             playsInline
-            preload="auto"
+            preload={getPreloadForIndex(i)}
+            onSeeked={() => handleSeeked(i)}
+            onLoadedData={() => {
+              handleSeekReset(i);
+              handleChapterBuffered(i);
+            }}
+            onCanPlayThrough={() => handleChapterBuffered(i)}
+            onError={() => handleSeekReset(i)}
           />
         ))}
 
@@ -387,7 +474,7 @@ export default function ScrollVideoJourney({
             <span>{debugStats.mediaTime.toFixed(3)}s</span>
 
             <span className="text-white/60">Encoding:</span>
-            <span className="text-blue-300">All-I-Frame (Lossless Seek)</span>
+            <span className="text-blue-300">FastStart H.264 (GOP 4, CRF 18)</span>
           </div>
         </aside>
       )}
