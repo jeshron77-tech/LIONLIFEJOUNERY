@@ -12,6 +12,8 @@
   overflow: hidden;
   background: #080806;
   pointer-events: none;
+  height: 100vh;
+  height: 100dvh;
 }
 
 .journey-video {
@@ -21,6 +23,8 @@
   height: 100%;
   object-fit: cover;
   opacity: 0;
+  visibility: hidden;
+  transform: translate3d(0, 0, 0);
   transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity;
   filter: brightness(0.92) contrast(1.05);
@@ -28,6 +32,11 @@
 
 .journey-video.is-active {
   opacity: 1;
+  visibility: visible;
+}
+
+.journey-video.is-adjacent {
+  visibility: visible;
 }
 
 /* Fixed viewport overlay for active chapter typography */
@@ -126,5 +135,37 @@
 @media (prefers-reduced-motion: reduce) {
   .journey-video {
     transition: none;
+  }
+}
+
+/* Mobile Phone Landscape & Short Screen Optimization (70% mobile viewers) */
+@media (max-height: 520px) {
+  .journey-overlay {
+    padding: 1rem;
+  }
+  .journey-copy h2 {
+    font-size: 1.45rem;
+    margin: 0.15rem 0;
+  }
+  .journey-subtitle {
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+  }
+  .journey-story {
+    display: none !important;
+  }
+  .king-audio-button {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.72rem;
+  }
+}
+
+/* Touch-friendly Tap Targets for Phones & Tablets */
+@media (pointer: coarse) {
+  .king-audio-button {
+    padding: 0.95rem 1.85rem;
+    font-size: 0.82rem;
+    min-height: 48px;
   }
 }

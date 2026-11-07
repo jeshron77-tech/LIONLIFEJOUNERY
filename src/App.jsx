@@ -61,7 +61,7 @@ export default function App() {
   }, [handleReturnToBeginning]);
 
   return (
-    <div className="relative w-full bg-[#080806] text-[#F5F0E6] min-h-screen">
+    <div className="relative w-full bg-[#080806] text-[#F5F0E6] min-h-screen min-h-[100dvh]">
       {/* Subtle Cinematic Film Grain Overlay */}
       <div className="film-grain" />
 

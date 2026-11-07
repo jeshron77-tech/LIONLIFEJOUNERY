@@ -12,7 +12,10 @@ const JOURNEY_STILLS = [
 
 export const EndingSection = React.memo(function EndingSection({ onReturnToBeginning }) {
   return (
-    <section className="relative w-full min-h-screen flex flex-col items-center justify-center px-6 py-28 bg-[#080806] z-20 overflow-hidden text-center">
+    <section
+      className="relative w-full min-h-screen min-h-[100dvh] flex flex-col items-center justify-center px-6 py-28 bg-[#080806] z-20 overflow-hidden text-center"
+      style={{ paddingBottom: 'max(7rem, calc(env(safe-area-inset-bottom, 0px) + 5rem))' }}
+    >
       {/* Background Editorial Montage: Lion's Life Journey Stills (Born -> Grow -> King -> Aging -> End -> New) */}
       <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none select-none">
         {/* 6-Panel Cinematic Editorial Film Tapestry */}

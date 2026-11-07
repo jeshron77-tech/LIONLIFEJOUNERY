@@ -28,6 +28,7 @@ function ScrollVideoJourney({
   // Latest-request-wins seek queue state
   const isSeekingRef = useRef(CHAPTERS.map(() => false));
   const pendingSeekRef = useRef(CHAPTERS.map(() => null));
+  const seekWatchdogRef = useRef(CHAPTERS.map(() => null));
 
   // Progressive preload set: Chapter 0 starts as "auto", others upgrade on demand
   const [autoPreloadSet, setAutoPreloadSet] = useState(() => new Set([0]));
@@ -112,7 +113,7 @@ function ScrollVideoJourney({
     }
   }, [audioEnabled, pauseKingAudio]);
 
-  // Hardened Latest-Request-Wins Seek Dispatcher
+  // Hardened Latest-Request-Wins Seek Dispatcher with Mobile Watchdog
   const dispatchSeek = useCallback((index, targetTime, targetFrame) => {
     const video = videoRefs.current[index];
     if (!video || !Number.isFinite(targetTime) || !Number.isFinite(video.duration) || video.duration <= 0) {
@@ -140,10 +141,30 @@ function ScrollVideoJourney({
 
     isSeekingRef.current[index] = true;
     pendingSeekRef.current[index] = null;
+
+    // Mobile Watchdog: auto-release lock if cellular 4G or mobile browser delays seeked event
+    if (seekWatchdogRef.current[index]) {
+      clearTimeout(seekWatchdogRef.current[index]);
+    }
+    seekWatchdogRef.current[index] = setTimeout(() => {
+      if (isSeekingRef.current[index]) {
+        isSeekingRef.current[index] = false;
+        const pending = pendingSeekRef.current[index];
+        if (pending !== null && pending !== undefined) {
+          pendingSeekRef.current[index] = null;
+          dispatchSeek(index, pending.targetTime, pending.targetFrame);
+        }
+      }
+    }, 220);
+
     video.currentTime = targetTime;
   }, []);
 
   const handleSeeked = useCallback((index) => {
+    if (seekWatchdogRef.current[index]) {
+      clearTimeout(seekWatchdogRef.current[index]);
+      seekWatchdogRef.current[index] = null;
+    }
     isSeekingRef.current[index] = false;
     const pending = pendingSeekRef.current[index];
     if (pending !== null && pending !== undefined) {
@@ -153,6 +174,10 @@ function ScrollVideoJourney({
   }, [dispatchSeek]);
 
   const handleSeekReset = useCallback((index) => {
+    if (seekWatchdogRef.current[index]) {
+      clearTimeout(seekWatchdogRef.current[index]);
+      seekWatchdogRef.current[index] = null;
+    }
     isSeekingRef.current[index] = false;
     const pending = pendingSeekRef.current[index];
     if (pending !== null && pending !== undefined) {
@@ -349,6 +374,9 @@ function ScrollVideoJourney({
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("keydown", onKeyDown);
+      seekWatchdogRef.current.forEach((timer) => {
+        if (timer) clearTimeout(timer);
+      });
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
         rafRef.current = 0;
@@ -362,7 +390,7 @@ function ScrollVideoJourney({
     <main
       className="journey"
       ref={containerRef}
-      style={{ height: `${CHAPTERS.length * 200}vh` }}
+      style={{ height: `${CHAPTERS.length * 200}vh`, minHeight: `${CHAPTERS.length * 200}dvh` }}
     >
       {/* Pinned 6-Video Stage */}
       <div className="journey-stage" aria-hidden="true">
@@ -374,11 +402,15 @@ function ScrollVideoJourney({
             }}
             className={`journey-video ${
               activeChapter === i ? "is-active" : ""
-            }`}
+            } ${Math.abs(activeChapter - i) <= 1 ? "is-adjacent" : ""}`}
             src={chapter.src}
             poster={chapter.poster}
             muted
             playsInline
+            webkit-playsinline="true"
+            disablePictureInPicture
+            disableRemotePlayback
+            tabIndex={-1}
             preload={getPreloadForIndex(i)}
             onSeeked={() => handleSeeked(i)}
             onLoadedData={() => {

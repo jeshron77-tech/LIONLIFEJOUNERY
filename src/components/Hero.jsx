@@ -34,7 +34,7 @@ export const Hero = React.memo(function Hero({ onBeginScroll }) {
   }, []);
 
   return (
-    <section className="relative w-full h-screen flex flex-col items-center justify-between px-6 py-10 md:py-14 overflow-hidden z-20">
+    <section className="relative w-full h-screen min-h-[100dvh] flex flex-col items-center justify-between px-6 py-10 md:py-14 overflow-hidden z-20">
       {/* Background with Ambient Video Footage & Glass Layer */}
       <div className="absolute inset-0 -z-10 overflow-hidden bg-[#080806]">
         {/* Crisp, vibrant ambient lion footage with instant poster */}
@@ -46,6 +46,10 @@ export const Hero = React.memo(function Hero({ onBeginScroll }) {
           loop
           muted
           playsInline
+          webkit-playsinline="true"
+          disablePictureInPicture
+          disableRemotePlayback
+          tabIndex={-1}
           className={`w-full h-full object-cover object-center filter brightness-[0.88] contrast-[1.05] saturate-[1.05] transition-all duration-1000 ${
             isLoaded ? 'opacity-90 scale-100' : 'opacity-0 scale-105'
           }`}
