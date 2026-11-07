@@ -5,6 +5,14 @@ export const Hero = React.memo(function Hero({ onBeginScroll }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const videoRef = useRef(null);
 
+  // Zero-Double-Download: Determine viewport once on init
+  const [heroSrc] = useState(() => {
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches) {
+      return '/videos/mobile/hero-ambient.mp4';
+    }
+    return '/videos/desktop/hero-ambient.mp4';
+  });
+
   useEffect(() => {
     // Gentle cinematic fade-in after mount
     const timer = setTimeout(() => setIsLoaded(true), 150);
@@ -40,7 +48,7 @@ export const Hero = React.memo(function Hero({ onBeginScroll }) {
         {/* Crisp, vibrant ambient lion footage with instant poster */}
         <video
           ref={videoRef}
-          src="/videos/hero-ambient.mp4"
+          src={heroSrc}
           poster="/images/journey/01-born.jpg"
           autoPlay
           loop

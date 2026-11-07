@@ -30,6 +30,17 @@ function ScrollVideoJourney({
   const pendingSeekRef = useRef(CHAPTERS.map(() => null));
   const seekWatchdogRef = useRef(CHAPTERS.map(() => null));
 
+  // Zero-Double-Download: Determine viewport size once on component initialization
+  const [isMobile] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.matchMedia("(max-width: 768px)").matches;
+    }
+    return false;
+  });
+
+  // Cinematic Buffer Gate: Visible until Chapter 01 achieves readyState >= 3
+  const [isInitialReady, setIsInitialReady] = useState(false);
+
   // Progressive preload set: Chapter 0 starts as "auto", others upgrade on demand
   const [autoPreloadSet, setAutoPreloadSet] = useState(() => new Set([0]));
 
@@ -49,6 +60,26 @@ function ScrollVideoJourney({
       upgradePreload(index + 1);
     }
   }, [upgradePreload]);
+
+  const handleChapterCanPlay = useCallback((index) => {
+    if (index === 0) {
+      setIsInitialReady(true);
+    }
+    handleChapterBuffered(index);
+  }, [handleChapterBuffered]);
+
+  // Buffer Gate Fail-Safe & Initial Check
+  useEffect(() => {
+    const ch0 = videoRefs.current[0];
+    if (ch0 && ch0.readyState >= 3) {
+      setIsInitialReady(true);
+      return;
+    }
+    const timer = setTimeout(() => {
+      setIsInitialReady(true);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Diagnostics & performance measurement
   const [debugMode, setDebugMode] = useState(() => {
@@ -392,35 +423,61 @@ function ScrollVideoJourney({
       ref={containerRef}
       style={{ height: `${CHAPTERS.length * 200}vh`, minHeight: `${CHAPTERS.length * 200}dvh` }}
     >
+      {/* Cinematic Golden Savanna Initial Buffer Gate */}
+      <div
+        className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#080806] transition-opacity duration-700 pointer-events-none ${
+          isInitialReady ? "opacity-0" : "opacity-100 pointer-events-auto"
+        }`}
+        aria-hidden={isInitialReady}
+      >
+        <div className="flex flex-col items-center gap-5 text-center px-6">
+          <div className="w-14 h-14 rounded-full border border-[#D4AF37]/50 flex items-center justify-center relative shadow-[0_0_30px_rgba(212,175,55,0.3)]">
+            <div className="w-7 h-7 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
+          </div>
+          <div className="flex flex-col items-center gap-1.5">
+            <p className="font-cinzel text-xs tracking-[0.35em] text-[#E7C76A] uppercase font-bold">
+              THE KING'S JOURNEY
+            </p>
+            <p className="font-cormorant italic text-sm text-[#F5F0E6]/75 tracking-wider">
+              Buffering the savanna experience...
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Pinned 6-Video Stage */}
       <div className="journey-stage" aria-hidden="true">
-        {CHAPTERS.map((chapter, i) => (
-          <video
-            key={chapter.id}
-            ref={(el) => {
-              videoRefs.current[i] = el;
-            }}
-            className={`journey-video ${
-              activeChapter === i ? "is-active" : ""
-            } ${Math.abs(activeChapter - i) <= 1 ? "is-adjacent" : ""}`}
-            src={chapter.src}
-            poster={chapter.poster}
-            muted
-            playsInline
-            webkit-playsinline="true"
-            disablePictureInPicture
-            disableRemotePlayback
-            tabIndex={-1}
-            preload={getPreloadForIndex(i)}
-            onSeeked={() => handleSeeked(i)}
-            onLoadedData={() => {
-              handleSeekReset(i);
-              handleChapterBuffered(i);
-            }}
-            onCanPlayThrough={() => handleChapterBuffered(i)}
-            onError={() => handleSeekReset(i)}
-          />
-        ))}
+        {CHAPTERS.map((chapter, i) => {
+          const activeSrc = isMobile ? chapter.mobileSrc : chapter.desktopSrc;
+          return (
+            <video
+              key={chapter.id}
+              ref={(el) => {
+                videoRefs.current[i] = el;
+              }}
+              className={`journey-video ${
+                activeChapter === i ? "is-active" : ""
+              } ${Math.abs(activeChapter - i) <= 1 ? "is-adjacent" : ""}`}
+              src={activeSrc}
+              poster={chapter.poster}
+              muted
+              playsInline
+              webkit-playsinline="true"
+              disablePictureInPicture
+              disableRemotePlayback
+              tabIndex={-1}
+              preload={getPreloadForIndex(i)}
+              onSeeked={() => handleSeeked(i)}
+              onLoadedData={() => {
+                handleSeekReset(i);
+                handleChapterBuffered(i);
+              }}
+              onCanPlay={() => handleChapterCanPlay(i)}
+              onCanPlayThrough={() => handleChapterCanPlay(i)}
+              onError={() => handleSeekReset(i)}
+            />
+          );
+        })}
 
         {/* Subtle Vignette Gradient */}
         <div className="absolute inset-0 pointer-events-none cinematic-vignette" />
@@ -517,7 +574,7 @@ function ScrollVideoJourney({
             <span>{debugStats.mediaTime.toFixed(3)}s</span>
 
             <span className="text-white/60">Encoding:</span>
-            <span className="text-blue-300">FastStart H.264 (GOP 4, Scrub-Optimized)</span>
+            <span className="text-blue-300">Dual-Stream {isMobile ? "720p Mobile" : "1080p Desktop"} (GOP 4)</span>
           </div>
         </aside>
       )}
