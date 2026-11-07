@@ -485,7 +485,7 @@ function ScrollVideoJourney({
             <span>{debugStats.mediaTime.toFixed(3)}s</span>
 
             <span className="text-white/60">Encoding:</span>
-            <span className="text-blue-300">FastStart H.264 (GOP 4, CRF 20)</span>
+            <span className="text-blue-300">FastStart H.264 (GOP 4, Scrub-Optimized)</span>
           </div>
         </aside>
       )}
