@@ -4,13 +4,13 @@ import { Volume2, VolumeX, Compass } from 'lucide-react';
 export const Navbar = React.memo(function Navbar({ activeChapterIndex, chapters, scrollProgress, isAudioPlaying, toggleAudio, onJumpToChapter }) {
   return (
     <header
-      className="fixed top-0 left-0 w-full z-50 px-6 md:px-12 py-4 flex items-center justify-between pointer-events-none transition-all duration-500 backdrop-blur-xl bg-white/[0.03] border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.15)]"
-      style={{ paddingTop: 'max(1rem, calc(env(safe-area-inset-top, 0px) + 0.35rem))' }}
+      className="fixed top-0 left-0 w-full z-50 px-4 sm:px-6 md:px-12 py-3 md:py-4 flex items-center justify-between pointer-events-none transition-all duration-500 backdrop-blur-xl bg-white/[0.03] border-b border-white/[0.08] shadow-[0_4px_30px_rgba(0,0,0,0.15)]"
+      style={{ paddingTop: 'max(0.75rem, calc(env(safe-area-inset-top, 0px) + 0.35rem))' }}
     >
       {/* Brand Title */}
-      <div className="pointer-events-auto flex items-center gap-3">
-        <span className="text-[#D4AF37] text-lg font-cinzel tracking-[0.25em] font-semibold select-none flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-[#D4AF37] shadow-[0_0_8px_#D4AF37]" />
+      <div className="pointer-events-auto flex items-center gap-2 sm:gap-3">
+        <span className="text-[#D4AF37] text-sm sm:text-lg font-cinzel tracking-[0.16em] sm:tracking-[0.25em] font-semibold select-none flex items-center gap-1.5 sm:gap-2">
+          <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-[#D4AF37] shadow-[0_0_8px_#D4AF37]" />
           THE KING'S JOURNEY
         </span>
       </div>

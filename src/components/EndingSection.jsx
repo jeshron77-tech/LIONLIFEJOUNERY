@@ -62,31 +62,31 @@ export const EndingSection = React.memo(function EndingSection({ onReturnToBegin
         </div>
 
         {/* Poetic Stanzas Revealed with Dignity & Restraint */}
-        <div className="flex flex-col gap-6 mb-16 drop-shadow-[0_4px_20px_rgba(0,0,0,0.95)]">
-          <p className="text-xl sm:text-2xl md:text-3xl font-cinzel tracking-[0.2em] text-[#E7C76A] font-semibold">
+        <div className="flex flex-col gap-4 sm:gap-6 mb-12 sm:mb-16 drop-shadow-[0_4px_20px_rgba(0,0,0,0.95)]">
+          <p className="text-base sm:text-2xl md:text-3xl font-cinzel tracking-[0.14em] sm:tracking-[0.2em] text-[#E7C76A] font-semibold">
             EVERY KING HAS A BEGINNING.
           </p>
           <div className="w-8 h-[1px] bg-[#D4AF37]/40 mx-auto" />
-          <p className="text-xl sm:text-2xl md:text-3xl font-cinzel tracking-[0.2em] text-[#D4AF37] font-semibold">
+          <p className="text-base sm:text-2xl md:text-3xl font-cinzel tracking-[0.14em] sm:tracking-[0.2em] text-[#D4AF37] font-semibold">
             EVERY REIGN HAS AN END.
           </p>
           <div className="w-8 h-[1px] bg-[#D4AF37]/40 mx-auto" />
-          <p className="text-xl sm:text-2xl md:text-3xl font-cinzel tracking-[0.2em] text-[#FFF6D6] font-bold">
+          <p className="text-base sm:text-2xl md:text-3xl font-cinzel tracking-[0.14em] sm:tracking-[0.2em] text-[#FFF6D6] font-bold">
             A NEW KING RISES.
           </p>
           <div className="w-8 h-[1px] bg-[#D4AF37]/40 mx-auto" />
-          <p className="text-base sm:text-xl font-cormorant italic tracking-[0.2em] text-[#D4AF37]">
+          <p className="text-sm sm:text-xl font-cormorant italic tracking-[0.16em] sm:tracking-[0.2em] text-[#D4AF37]">
             LIFE ALWAYS CONTINUES.
           </p>
         </div>
 
         {/* Climax Branding */}
-        <div className="pt-8 border-t border-[#D4AF37]/20 w-full max-w-xl flex flex-col items-center">
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-cinzel font-bold tracking-[0.15em] mb-4 select-none drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
+        <div className="pt-6 sm:pt-8 border-t border-[#D4AF37]/20 w-full max-w-xl flex flex-col items-center">
+          <h2 className="text-2xl sm:text-5xl md:text-6xl font-cinzel font-bold tracking-[0.1em] sm:tracking-[0.15em] mb-3 sm:mb-4 select-none drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
             <span className="gold-text-gradient">THE KING'S JOURNEY</span>
           </h2>
 
-          <p className="text-sm sm:text-base font-cormorant italic tracking-[0.25em] text-[#F5F0E6]/90 uppercase mb-12 drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
+          <p className="text-xs sm:text-base font-cormorant italic tracking-[0.2em] sm:tracking-[0.25em] text-[#F5F0E6]/90 uppercase mb-8 sm:mb-12 drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
             A STORY WRITTEN BY NATURE.
           </p>
 

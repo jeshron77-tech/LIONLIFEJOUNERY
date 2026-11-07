@@ -50,7 +50,7 @@ export const Hero = React.memo(function Hero({ onBeginScroll }) {
           disablePictureInPicture
           disableRemotePlayback
           tabIndex={-1}
-          className={`w-full h-full object-cover object-center filter brightness-[0.88] contrast-[1.05] saturate-[1.05] transition-all duration-1000 ${
+          className={`w-full h-full object-cover object-center max-sm:[object-position:center_36%] filter brightness-[0.88] contrast-[1.05] saturate-[1.05] transition-all duration-1000 ${
             isLoaded ? 'opacity-90 scale-100' : 'opacity-0 scale-105'
           }`}
           style={{ transition: 'opacity 2s ease-out, transform 8s ease-out' }}
@@ -73,30 +73,30 @@ export const Hero = React.memo(function Hero({ onBeginScroll }) {
         }`}
       >
         {/* Pre-title Monogram / Tag */}
-        <div className="inline-flex items-center gap-3 mb-5 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
+        <div className="inline-flex items-center gap-2.5 sm:gap-3 mb-4 sm:mb-5 drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)]">
           <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] shadow-[0_0_8px_#D4AF37]" />
-          <span className="text-xs md:text-sm font-cinzel tracking-[0.3em] text-[#E7C76A] uppercase font-semibold">
+          <span className="text-[10px] sm:text-xs md:text-sm font-cinzel tracking-[0.22em] sm:tracking-[0.3em] text-[#E7C76A] uppercase font-semibold">
             THE WILD · THE LIFE · THE LEGACY
           </span>
           <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] shadow-[0_0_8px_#D4AF37]" />
         </div>
 
-        {/* Majestic Gold Title */}
-        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-cinzel font-bold tracking-[0.12em] leading-tight mb-5 select-none drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
+        {/* Majestic Gold Title - Optimized for Phone Ratio and PC Style */}
+        <h1 className="text-3xl sm:text-6xl md:text-7xl lg:text-8xl font-cinzel font-bold tracking-[0.08em] sm:tracking-[0.12em] leading-tight mb-3 sm:mb-5 select-none drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
           <span className="gold-text-gradient block">THE KING'S</span>
           <span className="gold-text-gradient block">JOURNEY</span>
         </h1>
 
         {/* Golden Horizontal Accent Rule */}
-        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent my-3 shadow-[0_0_8px_#D4AF37]" />
+        <div className="w-20 sm:w-24 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent my-2 sm:my-3 shadow-[0_0_8px_#D4AF37]" />
 
         {/* Editorial Subtitle */}
-        <p className="text-lg sm:text-2xl md:text-3xl font-cormorant italic font-normal tracking-wide text-[#F5F0E6] max-w-2xl px-4 mt-2 drop-shadow-[0_2px_16px_rgba(0,0,0,0.95)]">
+        <p className="text-base sm:text-2xl md:text-3xl font-cormorant italic font-normal tracking-wide text-[#F5F0E6] max-w-2xl px-2 sm:px-4 mt-1 sm:mt-2 drop-shadow-[0_2px_16px_rgba(0,0,0,0.95)]">
           "From the first breath to the final sunset."
         </p>
 
         {/* Narrative Context Preview */}
-        <p className="text-xs sm:text-sm font-sans-ui text-white/85 tracking-wider max-w-lg mt-4 font-light drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
+        <p className="text-[11px] sm:text-sm font-sans-ui text-white/85 tracking-wider max-w-md sm:max-w-lg mt-3 sm:mt-4 font-light drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
           An interactive cinematic odyssey through the six sacred chapters of a lion's life. Controlled by your touch and scroll.
         </p>
       </div>
