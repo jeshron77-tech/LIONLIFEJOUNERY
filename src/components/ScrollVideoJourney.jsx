@@ -221,14 +221,11 @@ function ScrollVideoJourney({
   }, [dispatchSeek]);
 
   const getPreloadForIndex = useCallback((i) => {
-    if (autoPreloadSet.has(i)) {
+    if (autoPreloadSet.has(i) || Math.abs(activeChapter - i) <= 1) {
       return "auto";
     }
-    if (autoPreloadSet.has(i - 1)) {
-      return "metadata";
-    }
-    return "none";
-  }, [autoPreloadSet]);
+    return "metadata";
+  }, [activeChapter, autoPreloadSet]);
 
   // Main Coordinated Animation & Continuous Scroll Timeline Loop
   const updateTimeline = useCallback(() => {
